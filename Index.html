@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Korea Heritage Stamp Tracker</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b1424;color:#fff;font-family:-apple-system,BlinkMacSystemFont,Arial,sans-serif}
+header{padding:18px 16px 12px;background:#101d32}
+h1{font-size:21px;margin:0 0 5px}
+small,.muted{color:#9caec6}
+.controls{padding:12px;background:#101d32;display:flex;gap:8px;flex-wrap:wrap}
+button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #35445b}
+button{background:#1c304b;color:white;cursor:pointer}
+button.active{background:#2763c4}
+input{background:#fff;color:#111;width:100%}
+#map{height:52vh;min-height:300px;background:#18283c}
+.stats{display:flex;gap:10px;padding:12px;background:#101d32}
+.stat{flex:1;background:#1b2c46;padding:12px;border-radius:12px;text-align:center}
+.stat strong{display:block;font-size:23px}
+#locations{padding:12px 12px 90px}
+.place{background:#14243a;border:1px solid #283c56;border-radius:12px;padding:12px;margin-bottom:9px}
+.place h3{margin:0 0 5px;font-size:16px}
+.place p{margin:4px 0;color:#b5c3d6;font-size:13px}
+.actions{display:flex;gap:7px;margin-top:10px}
+.actions button{flex:1;font-size:13px}
+a{color:#7cb4ff}
+nav{position:fixed;bottom:0;left:0;right:0;background:#101d32;padding:10px;display:flex;justify-content:space-around;z-index:1000;border-top:1px solid #33465e}
+nav button{border:0;background:none;font-size:13px}
+.leaflet-popup-content{color:#222}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🇰🇷 Korea Heritage Stamps</h1>
+<small>Book 1 + Book 2 • Starting from K16</small>
+</header>
+
+<div class="stats">
+<div class="stat"><strong id="done">0</strong><small>Collected</small></div>
+<div class="stat"><strong id="loaded">0</strong><small>Mapped</small></div>
+<div class="stat"><strong>100</strong><small>Target</small></div>
+</div>
+
+<div class="controls">
+<select id="person">
+<option value="me">My stamps</option>
+<option value="wife">Wife's stamps</option>
+</select>
+<button class="active" id="all">All</button>
+<button id="book1">Book 1</button>
+<button id="book2">Book 2</button>
+<input id="search" placeholder="Search heritage locations...">
+</div>
+
+<div id="map"></div>
+<section id="locations"></section>
+
+<nav>
+<button onclick="document.getElementById('map').scrollIntoView()">🗺 Map</button>
+<button onclick="document.getElementById('locations').scrollIntoView()">📋 Checklist</button>
+<button onclick="resetView()">📍 K16</button>
+</nav>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const places=[
+{id:1,name:"Gyeongbokgung Palace",ko:"경복궁",book:1,lat:37.5796,lng:126.9770},
+{id:2,name:"Jongmyo Shrine",ko:"종묘",book:1,lat:37.5745,lng:126.9947},
+{id:3,name:"Suwon Hwaseong Fortress",ko:"수원 화성",book:1,lat:37.2871,lng:127.0117},
+{id:4,name:"Namhansanseong Fortress",ko:"남한산성",book:1,lat:37.4785,lng:127.1810},
+{id:5,name:"Gongsanseong Fortress",ko:"공산성",book:1,lat:36.4622,lng:127.1277},
+{id:6,name:"Busosanseong Fortress",ko:"부소산성",book:1,lat:36.2839,lng:126.9167},
+{id:7,name:"Mireuksa Temple Site",ko:"미륵사지",book:1,lat:36.0127,lng:127.0315},
+{id:8,name:"Wanggung-ri Historic Site",ko:"왕궁리 유적",book:1,lat:35.9720,lng:127.0540},
+{id:9,name:"Bulguksa Temple",ko:"불국사",book:1,lat:35.7900,lng:129.3321},
+{id:10,name:"Seokguram Grotto",ko:"석굴암",book:1,lat:35.7950,lng:129.3492},
+{id:11,name:"Hahoe Folk Village",ko:"하회마을",book:1,lat:36.5387,lng:128.5185},
+{id:12,name:"Seongsan Ilchulbong",ko:"성산일출봉",book:1,lat:33.4588,lng:126.9425},
+{id:13,name:"Incheon Open Port Area",ko:"인천 개항장",book:2,lat:37.4737,lng:126.6205},
+{id:14,name:"Jeju Manjanggul Cave",ko:"만장굴",book:2,lat:33.5280,lng:126.7715}
+];
+
+// These are approximate heritage-site coordinates.
+// Book assignments and physical stamp boxes require verification.
+
+let filter="all";
+let map=L.map("map").setView([36.6,127.8],7);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+attribution:"© OpenStreetMap contributors",
+maxZoom:19
+}).addTo(map);
+
+const markers=L.layerGroup().addTo(map);
+
+function profile(){return document.getElementById("person").value}
+function key(id){return "stamp_"+profile()+"_"+id}
+function collected(id){return localStorage.getItem(key(id))==="yes"}
+
+function toggleStamp(id){
+if(collected(id))localStorage.removeItem(key(id));
+else localStorage.setItem(key(id),"yes");
+render();
+}
+
+function navUrl(p){
+return "https://map.naver.com/p/search/"+encodeURIComponent(p.ko);
+}
+
+function resetView(){
+map.setView([37.445,127.115],11);
+document.getElementById("map").scrollIntoView();
+}
+
+function render(){
+markers.clearLayers();
+const q=document.getElementById("search").value.toLowerCase();
+let shown=places.filter(p=>
+(filter==="all"||p.book===Number(filter))&&
+(p.name.toLowerCase().includes(q)||p.ko.includes(q))
+);
+document.getElementById("loaded").textContent=places.length;
+document.getElementById("done").textContent=
+places.filter(p=>collected(p.id)).length;
+
+const list=document.getElementById("locations");
+list.innerHTML="";
+
+shown.forEach(p=>{
+const color=p.book===1?"#3b82f6":"#ef4444";
+const marker=L.circleMarker([p.lat,p.lng],{
+radius:9,color:"#fff",weight:2,fillColor:color,fillOpacity:1
+}).addTo(markers);
+
+marker.bindPopup(
+"<b>"+p.name+"</b><br>"+p.ko+
+"<br>Book "+p.book+
+"<br>Approximate heritage-site location"+
+'<br><a target="_blank" rel="noopener" href="'+navUrl(p)+'">Open Naver Maps</a>'
+);
+
+const card=document.createElement("div");
+card.className="place";
+const title=document.createElement("h3");
+title.textContent=(collected(p.id)?"✅ ":"")+p.name;
+const detail=document.createElement("p");
+detail.textContent=p.ko+" • Book "+p.book+" • Provisional location";
+const actions=document.createElement("div");
+actions.className="actions";
+
+const stamp=document.createElement("button");
+stamp.textContent=collected(p.id)?"✓ Collected":"Mark collected";
+stamp.onclick=()=>toggleStamp(p.id);
+
+const locate=document.createElement("button");
+locate.textContent="Show on map";
+locate.onclick=()=>{
+map.setView([p.lat,p.lng],15);
+marker.openPopup();
+document.getElementById("map").scrollIntoView();
+};
+
+const directions=document.createElement("button");
+directions.textContent="Naver";
+directions.onclick=()=>window.open(navUrl(p),"_blank");
+
+actions.append(stamp,locate,directions);
+card.append(title,detail,actions);
+list.appendChild(card);
+});
+}
+
+["all","book1","book2"].forEach(id=>{
+document.getElementById(id).onclick=()=>{
+filter=id==="all"?"all":id==="book1"?"1":"2";
+document.querySelectorAll(".controls button").forEach(b=>b.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+render();
+};
+});
+
+document.getElementById("search").oninput=render;
+document.getElementById("person").onchange=render;
+render();
+</script>
+</body>
+</html>
