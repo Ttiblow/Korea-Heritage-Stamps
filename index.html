@@ -58,6 +58,14 @@ nav button{border:0;background:none;font-size:13px}
 </div>
 
 <div id="map"></div>
+<section id="tripPanel" style="background:#14243a;margin:12px;padding:15px;border-radius:12px">
+<h2>🚙 K16 Road Trip Planner</h2>
+<p class="muted">Select provisional heritage stops below to plan a trip. Distances are straight-line estimates, not driving distances.</p>
+<div id="tripList"></div>
+<button id="nearby">Nearby K16</button><button id="clearTrip">Clear trip</button><button id="copyTrip">Copy itinerary</button>
+<p class="muted">Verify the official stamp-box location before traveling.</p>
+</section>
+<section id="progressPanel" style="background:#14243a;margin:12px;padding:15px;border-radius:12px"></section>
 <section id="locations"></section>
 
 <nav>
@@ -89,6 +97,7 @@ const places=[
 // Book assignments and physical stamp boxes require verification.
 
 let filter="all";
+let nearOnly=false;const tripStops=new Set();
 let map=L.map("map").setView([36.6,127.8],7);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
 attribution:"© OpenStreetMap contributors",
@@ -116,6 +125,18 @@ map.setView([37.445,127.115],11);
 document.getElementById("map").scrollIntoView();
 }
 
+function dist(p){const r=Math.PI/180,a=(p.lat-37.445)*r,b=(p.lng-127.115)*r,h=Math.sin(a/2)**2+Math.cos(37.445*r)*Math.cos(p.lat*r)*Math.sin(b/2)**2;return 12742*Math.asin(Math.sqrt(h))}
+function updateTrip(){
+ const list=document.getElementById("tripList");list.innerHTML="";
+ const arr=places.filter(p=>tripStops.has(p.id));
+ if(!arr.length)list.textContent="No stops selected yet.";
+ arr.forEach(p=>{const d=document.createElement("div");d.style.padding="8px 0";const a=document.createElement("a");a.href=navUrl(p);a.target="_blank";a.rel="noopener";a.textContent=p.name+" ("+Math.round(dist(p))+" km from K16)";d.append(a);list.append(d)});
+ const box=document.getElementById("progressPanel");box.innerHTML="<h2>📊 Passport Progress</h2>";
+ for(const b of [1,2]){const target=b===1?76:24,done=places.filter(p=>p.book===b&&collected(p.id)).length;const line=document.createElement("p");line.textContent="Book "+b+": "+done+" marked / "+target+" target • "+places.filter(p=>p.book===b).length+" provisional entries loaded";box.append(line)}
+}
+document.getElementById("nearby").onclick=()=>{nearOnly=!nearOnly;document.getElementById("nearby").textContent=nearOnly?"Show all regions":"Nearby K16";render()};
+document.getElementById("clearTrip").onclick=()=>{tripStops.clear();render()};
+document.getElementById("copyTrip").onclick=()=>{const t=places.filter(p=>tripStops.has(p.id)).map((p,i)=>(i+1)+". "+p.name+" — "+navUrl(p)).join("\\n");if(!t){alert("Select stops first");return}if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert("Copied itinerary")).catch(()=>prompt("Copy itinerary",t));else prompt("Copy itinerary",t)};
 function render(){
 markers.clearLayers();
 const q=document.getElementById("search").value.toLowerCase();
@@ -123,6 +144,7 @@ let shown=places.filter(p=>
 (filter==="all"||p.book===Number(filter))&&
 (p.name.toLowerCase().includes(q)||p.ko.includes(q))
 );
+if(nearOnly)shown=shown.filter(p=>dist(p)<100).sort((a,b)=>dist(a)-dist(b));
 document.getElementById("loaded").textContent=places.length;
 document.getElementById("done").textContent=
 places.filter(p=>collected(p.id)).length;
@@ -168,10 +190,12 @@ const directions=document.createElement("button");
 directions.textContent="Naver";
 directions.onclick=()=>window.open(navUrl(p),"_blank");
 
-actions.append(stamp,locate,directions);
+const trip=document.createElement("button");trip.textContent=tripStops.has(p.id)?"✓ Trip":"+ Trip";trip.onclick=()=>{if(tripStops.has(p.id))tripStops.delete(p.id);else tripStops.add(p.id);render()};
+actions.append(stamp,locate,directions,trip);
 card.append(title,detail,actions);
 list.appendChild(card);
 });
+updateTrip();
 }
 
 ["all","book1","book2"].forEach(id=>{
