@@ -1,0 +1,18 @@
+{
+  "name": "Our Korea — Heritage Passport",
+  "short_name": "Our Korea",
+  "description": "Our cinematic Korea heritage stamp journey",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090b0e",
+  "theme_color": "#090b0e",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
