@@ -31,13 +31,53 @@ a{color:#7cb4ff}
 nav{position:fixed;bottom:0;left:0;right:0;background:#101d32;padding:10px;display:flex;justify-content:space-around;z-index:1000;border-top:1px solid #33465e}
 nav button{border:0;background:none;font-size:13px}
 .leaflet-popup-content{color:#222}
+
+/* CINEMATIC PASSPORT v3 — responsive editorial design */
+:root{--gold:#d8b57c;--muted:#a9a7a4;--panel:#121417;--edge:rgba(217,184,132,.22)}
+html{scroll-behavior:smooth}
+body{background:#090b0e;color:#f5efe5;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{position:relative;isolation:isolate;min-height:310px;display:flex;flex-direction:column;justify-content:space-between;padding:23px 20px 27px;overflow:hidden;background:linear-gradient(180deg,rgba(3,6,11,.35),rgba(5,7,10,.54) 40%,#090b0e 100%),radial-gradient(ellipse at 72% 45%,#5c514b 0%,#232e34 40%,#090b0e 80%);border-bottom:1px solid var(--edge)}
+header:after{content:"";position:absolute;inset:0;z-index:-1;background-image:url("hero.jpg");background-size:cover;background-position:center 47%;opacity:.74}
+.brand{font-family:Georgia,"Times New Roman",serif;font-size:32px;letter-spacing:.25em;line-height:1;color:#f8eee0;text-shadow:0 2px 12px #000}
+.brand span{color:var(--gold)}
+.brand-sub{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#e6d2b6;margin-top:9px}
+.hero-kicker{font-size:10px;letter-spacing:.34em;color:var(--gold);text-transform:uppercase;margin:0 0 12px}
+.hero-title{font:italic 42px/1.03 Georgia,serif;max-width:450px;letter-spacing:-.03em;text-shadow:0 2px 15px #000}
+.hero-sub{font-size:11px;letter-spacing:.24em;color:#e2d6c4;margin-top:15px;text-transform:uppercase}
+.top-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
+.top-links a{font-size:11px;color:#f4e6d3;text-decoration:none;border:1px solid rgba(216,181,124,.42);background:rgba(0,0,0,.38);padding:9px 13px;border-radius:30px;backdrop-filter:blur(8px)}
+.stats{background:transparent;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}
+.stat{background:linear-gradient(150deg,#20201e,#101114);border:1px solid var(--edge);border-radius:12px;padding:17px 8px}
+.stat strong{font:29px Georgia,serif;color:#f8e7cb;margin-bottom:5px}
+.stat small{font-size:10px;text-transform:uppercase;letter-spacing:.11em;color:var(--gold)}
+.controls{background:transparent;padding:12px;gap:8px}
+.controls select,.controls input{background:#15181b;color:#f2ece4;border:1px solid #3c3935}
+.controls input{min-width:100%;border-radius:12px}
+button{background:#1b1c1e;color:#f1e8dc;border:1px solid #50483d;transition:background .2s}
+button.active,button:focus-visible{background:#59442a;border-color:var(--gold);color:#fff}
+#map{height:55vh;min-height:390px;margin:0 12px;border:1px solid var(--edge);border-radius:15px;overflow:hidden;box-shadow:0 18px 55px rgba(0,0,0,.4)}
+#locations{padding:12px 12px 100px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:10px;align-content:start}
+.place{background:linear-gradient(145deg,#1a1b1e,#101214);border:1px solid var(--edge);border-radius:14px;margin:0;padding:16px}
+.place h3{font:20px Georgia,serif;color:#f7ead8;line-height:1.2}
+.place p{color:#a9aaa9;font-size:12px;margin-top:9px}
+.actions{flex-wrap:wrap}.actions button{flex:1 1 43%;font-size:12px;padding:9px 5px}
+a{color:#dfba83}
+#tripPanel,#progressPanel,#allLocationsDirectory{background:linear-gradient(135deg,#191a1b,#101214)!important;border:1px solid var(--edge);border-radius:15px!important}
+#tripPanel h2,#progressPanel h2,#allLocationsDirectory h2{font:22px Georgia,serif;color:#e8c38c}
+nav{background:rgba(12,13,16,.96);border-top:1px solid var(--edge);backdrop-filter:blur(12px);padding-bottom:max(10px,env(safe-area-inset-bottom))}
+nav button{color:#e8d9c4}
+.section-heading{padding:20px 16px 10px;font:25px Georgia,serif;color:#e8c38c;letter-spacing:.02em}
+.section-caption{padding:0 16px 13px;color:#aaa;font-size:12px}
+@media(min-width:850px){header{min-height:430px;padding:35px 6vw}.brand{font-size:42px}.hero-title{font-size:68px}.stats{max-width:1100px;margin:auto}.controls{max-width:1100px;margin:auto}#map{max-width:1076px;margin:auto}#locations{max-width:1100px;margin:auto}.hero-sub{font-size:13px}}
+
 </style>
 </head>
 <body>
 
 <header>
-<h1>🇰🇷 Korea Heritage Stamps</h1>
-<small>Book 1 + Book 2 • Starting from K16</small>
+<div><div class="brand">K<span>O</span>REA</div><div class="brand-sub">Heritage Stamp Tracker</div></div>
+<div><p class="hero-kicker">A passport to the extraordinary</p><div class="hero-title">Our Korea<br>Journey</div><div class="hero-sub">100 destinations · 13 routes · two travelers</div>
+<div class="top-links"><a href="#map">Explore map</a><a href="#locations">Destinations</a><a href="#tripPanel">Our trips</a></div></div>
 </header>
 
 <div class="stats">
@@ -63,7 +103,7 @@ nav button{border:0;background:none;font-size:13px}
 <a href="https://seokwoo.kim/khvp.html" target="_blank" rel="noopener">Browse all 13 routes and 110 heritage entries</a><br><br>
 <a href="https://www.kh.or.kr/visit/" target="_blank" rel="noopener">Official stamp information</a>
 </section>
-<div id="map"></div>
+<div class="section-heading">Explore Korea</div><div class="section-caption">100 approximate heritage locations · Tap any pin to explore</div><div id="map"></div>
 <section id="tripPanel" style="background:#14243a;margin:12px;padding:15px;border-radius:12px">
 <h2>🚙 K16 Road Trip Planner</h2>
 <p class="muted">Select provisional heritage stops below to plan a trip. Distances are straight-line estimates, not driving distances.</p>
@@ -72,7 +112,7 @@ nav button{border:0;background:none;font-size:13px}
 <p class="muted">Verify the official stamp-box location before traveling.</p>
 </section>
 <section id="progressPanel" style="background:#14243a;margin:12px;padding:15px;border-radius:12px"></section>
-<section id="locations"></section>
+<div class="section-heading">The Destination Journal</div><div class="section-caption">Search, navigate, and collect together</div><section id="locations"></section>
 <section id="allLocationsDirectory" style="margin:12px;padding:14px;border:1px solid #36506c;border-radius:12px;background:#14243a">
 <h2>🇰🇷 Complete 13-Route Location Directory</h2>
 <p style="font-size:13px">Browse all 110 listed heritage entries across the 13 routes, including Plus sites and repeat-route entries. This independent directory is embedded below; it is separate from your personal stamp checklist and the interactive pins above.</p>
