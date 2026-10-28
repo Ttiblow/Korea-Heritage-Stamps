@@ -1,1 +1,1 @@
-# Korea-Heritage-Stamps
+# korea-heritage-stamps
