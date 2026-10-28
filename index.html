@@ -57,6 +57,12 @@ nav button{border:0;background:none;font-size:13px}
 <input id="search" placeholder="Search heritage locations...">
 </div>
 
+<section style="margin:12px;padding:14px;border:1px solid #36506c;border-radius:12px;background:#14243a">
+<strong>📚 Full Passport Directory — Reference</strong>
+<p class="muted">This map has <span id="directoryCount"></span> provisional heritage-site pins, not all 100 verified stamp-box positions. The independent 110-entry directory includes Plus and overlapping sites. Confirm official stamp stations before travel.</p>
+<a href="https://seokwoo.kim/khvp.html" target="_blank" rel="noopener">Browse all 13 routes and 110 heritage entries</a><br><br>
+<a href="https://www.kh.or.kr/visit/" target="_blank" rel="noopener">Official stamp information</a>
+</section>
 <div id="map"></div>
 <section id="tripPanel" style="background:#14243a;margin:12px;padding:15px;border-radius:12px">
 <h2>🚙 K16 Road Trip Planner</h2>
@@ -90,7 +96,25 @@ const places=[
 {id:11,name:"Hahoe Folk Village",ko:"하회마을",book:1,lat:36.5387,lng:128.5185},
 {id:12,name:"Seongsan Ilchulbong",ko:"성산일출봉",book:1,lat:33.4588,lng:126.9425},
 {id:13,name:"Incheon Open Port Area",ko:"인천 개항장",book:2,lat:37.4737,lng:126.6205},
-{id:14,name:"Jeju Manjanggul Cave",ko:"만장굴",book:2,lat:33.5280,lng:126.7715}
+{id:14,name:"Jeju Manjanggul Cave",ko:"만장굴",book:2,lat:33.5280,lng:126.7715},
+{"id":15,"name":"Changdeokgung Palace","ko":"창덕궁","book":1,"lat":37.5794,"lng":126.991},
+{"id":16,"name":"Yungneung and Geolleung Royal Tombs","ko":"융릉과 건릉","book":1,"lat":37.2123,"lng":126.9907},
+{"id":17,"name":"Ganghwa Dolmen Site","ko":"강화 부근리 지석묘","book":1,"lat":37.772,"lng":126.4367},
+{"id":18,"name":"Jeondeungsa Temple","ko":"전등사","book":1,"lat":37.632,"lng":126.4844},
+{"id":19,"name":"Gimpo Jangneung Royal Tomb","ko":"김포 장릉","book":1,"lat":37.6151,"lng":126.7113},
+{"id":20,"name":"Gyerim Forest","ko":"경주 계림","book":1,"lat":35.8302,"lng":129.2198},
+{"id":21,"name":"Daereungwon Tomb Complex","ko":"대릉원","book":1,"lat":35.8383,"lng":129.2129},
+{"id":22,"name":"Wolseong Palace Site","ko":"경주 월성","book":1,"lat":35.8314,"lng":129.227},
+{"id":23,"name":"Dosanseowon Confucian Academy","ko":"도산서원","book":1,"lat":36.7272,"lng":128.8435},
+{"id":24,"name":"Bongjeongsa Temple","ko":"봉정사","book":1,"lat":36.6537,"lng":128.6624},
+{"id":25,"name":"Magoksa Temple","ko":"마곡사","book":1,"lat":36.5576,"lng":127.0165},
+{"id":26,"name":"Beopjusa Temple","ko":"법주사","book":1,"lat":36.5417,"lng":127.8328},
+{"id":27,"name":"Seonamsa Temple","ko":"선암사","book":1,"lat":34.9955,"lng":127.3316},
+{"id":28,"name":"Songgwangsa Temple","ko":"송광사","book":1,"lat":34.9998,"lng":127.2761},
+{"id":29,"name":"Tongdosa Temple","ko":"통도사","book":1,"lat":35.4886,"lng":129.0644},
+{"id":30,"name":"Buseoksa Temple","ko":"부석사","book":1,"lat":36.9987,"lng":128.6817},
+{"id":31,"name":"Haeinsa Temple","ko":"해인사","book":1,"lat":35.8011,"lng":128.0982},
+{"id":32,"name":"Daeheungsa Temple","ko":"대흥사","book":1,"lat":34.4764,"lng":126.6162}
 ];
 
 // These are approximate heritage-site coordinates.
@@ -146,6 +170,7 @@ let shown=places.filter(p=>
 );
 if(nearOnly)shown=shown.filter(p=>dist(p)<100).sort((a,b)=>dist(a)-dist(b));
 document.getElementById("loaded").textContent=places.length;
+document.getElementById("directoryCount").textContent=places.length;
 document.getElementById("done").textContent=
 places.filter(p=>collected(p.id)).length;
 
