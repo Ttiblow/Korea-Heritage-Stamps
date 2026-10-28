@@ -183,6 +183,23 @@ render();
 };
 });
 
+// Backup all existing stamp keys without changing their IDs.
+function exportStamps(){
+ const stamps={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith("stamp_"))stamps[k]=localStorage.getItem(k)}
+ const blob=new Blob([JSON.stringify({version:1,stamps},null,2)],{type:"application/json"});
+ const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="heritage-stamps-backup.json";a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
+}
+function importStamps(file){
+ file.text().then(t=>{const data=JSON.parse(t);if(!data.stamps||typeof data.stamps!=="object")throw Error("Invalid backup");
+ const entries=Object.entries(data.stamps).filter(([k,v])=>/^stamp_(me|wife)_\\d+$/.test(k)&&v==="yes");
+ if(confirm("Restore "+entries.length+" collected stamps? Existing stamps will be kept.")){entries.forEach(([k,v])=>localStorage.setItem(k,v));render();}
+ }).catch(e=>alert("Import failed: "+e.message));
+}
+const backupControls=document.createElement("div");backupControls.className="controls";
+const exp=document.createElement("button");exp.textContent="⬇ Backup stamps";exp.onclick=exportStamps;
+const imp=document.createElement("button");imp.textContent="⬆ Restore stamps";
+const file=document.createElement("input");file.type="file";file.accept=".json,application/json";file.style.display="none";file.onchange=()=>{if(file.files[0])importStamps(file.files[0]);file.value=""};imp.onclick=()=>file.click();
+backupControls.append(exp,imp,file);document.getElementById("locations").before(backupControls);
 document.getElementById("search").oninput=render;
 document.getElementById("person").onchange=render;
 render();
